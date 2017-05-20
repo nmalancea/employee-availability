@@ -9,4 +9,9 @@
 node availability.js 1 12/29/2015 01/02/2016
 ```
 
-Alternatively you can uncomment a sample test at the bottom of `availability.js` and simply run `node availability.js`.
+Alternatively you can uncomment a sample test at the bottom of `availability.js` and simply run:
+
+```shell
+node availability.js
+```
+
