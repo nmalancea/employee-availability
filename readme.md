@@ -1,7 +1,5 @@
 ### Assumptions
-1. Outside of custom availability hours, company hours will be used.
-2. Availabilities are given in sorted order.
-3. Availabilities have no overlap.
+* Outside of custom availability hours, company hours will be used.
 
 ### Running
 
