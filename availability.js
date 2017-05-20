@@ -1,51 +1,26 @@
-// Assumptions:
-// 1. If custom availability is provided for an employee, she will not work outside those date ranges.
-// - the opposite assumption may be better
-// 2. Availabilities are given in sorted order.
-
-/* Method 1
-Keep a cursor through the interval
-For each range:
-- print days before
-- days during
-If you have days left go ahead and print them
-
-Method 2
-For each day in the interval:
-- check each interval and if it's there print that number, if not print 0
-*/
-
 const fs = require('fs');
 
-const printEmployeeAvailability = (id, start, end) => {
+const printEmployeeAvailability = (id, startString, endString) => {
 	const {companyHours, employees, availabilities} = parseInput();
-	const startDate = new Date(start);
-	const endDate = new Date(end);
+	const start = new Date(startString);
+	const end = new Date(endString);
 	const ranges = availabilities.filter(a => a.employeeId === id);
-
-	let cursor = startDate;
-	ranges.forEach(r => {
-		if ()
-	})
-
-	// printSchedule(new Date('05/19/2017'), new Date('05/30/2017'), companyHours);
-
-	// if (end < firstRange.start && start > lastRange.end) {
-	//
-	// } else {
-	//   for
-	// }
-
-	// console.log(companyHours);
-	// console.log(employees);
-	// console.log(availabilities);
-	// console.log(ranges);
+	printSchedule(start, end, companyHours, ranges);
 }
 
-const printSchedule = (startDate, endDate, hours) => {
-	let next = startDate;
-	while (next <= endDate) {
-		console.log('"' + formatDate(next) + '", ' + hours[next.getDay()]);
+const printSchedule = (start, end, hours, ranges) => {
+	let next = start;
+	while (next <= end) {
+		let workHours;
+		ranges.forEach(r => {
+			if ((r.start === null || r.start <= next) && (r.end === null || r.end >= next)) {
+				workHours = r.hours[next.getDay()];
+			}
+		});
+		if (!workHours) {
+			workHours = hours[next.getDay()];
+		}
+		console.log('"' + formatDate(next) + '", ' + workHours);
 		next.setDate(next.getDate() + 1);
 	}
 }
@@ -71,8 +46,8 @@ const parseInput = () => {
 			const hours = parseHours(line.substr(line.indexOf('[')));
 			availabilities.push({
 				employeeId: Number(a[0]),
-				startDate: parseDate(a[1]),
-				endDate: parseDate(a[2]),
+				start: parseDate(a[1]),
+				end: parseDate(a[2]),
 				hours: makeSundayFirst(hours)
 			});
 		}
@@ -96,4 +71,14 @@ const formatDate = d => {
   return month + '/' + day + '/' + year;
 }
 
-printEmployeeAvailability(1, '12/29/2015', '01/02/2016');
+// running with command line arguments
+if (process.argv.length === 5) { // first 2 elements are the process and file names
+	const args = process.argv.slice(2); // user-provided args start at index 2
+	args[0] = Number(args[0]);
+	printEmployeeAvailability(...args);
+}
+
+// sample tests
+// printEmployeeAvailability(1, '12/29/2015', '01/02/2016'); // 9, 9, 9, 4, 0
+// printEmployeeAvailability(1, '12/29/2016', '01/02/2017'); // 9, 8, 0, 0, 8
+// printEmployeeAvailability(3, '12/29/2016', '01/02/2017'); // 9, 8, 0, 0, 9
